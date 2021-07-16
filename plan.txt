@@ -23,20 +23,26 @@ Main project TO-DO: (Always contains the next 5 things that i am going to do)
     > Reinforcement learning course
     > Use yolo for a smaller problem to get familiar with it
 
+Tech-stack:
+Streamlit, Flask, Tensorflow, OpenCV, ...
 
 Side projects:
 (These projects are sorted in increasing level of difficulty and decreasing level of familiarity)
-1. Image Classification/Recognition(Try out a bunch of models)
+
+> Web scraping some data from the nfs fandom wiki
+    url: https://nfs.fandom.com/wiki/Need_for_Speed:_Most_Wanted
+
+> Image Classification/Recognition(Try out a bunch of models)
     > Make a classification CNN that can classify between the stock cars present in the shop.
     > Make a classification CNN that can classify between the blacklist.
 
-2. Object Character Recognition
+> Object Character Recognition
     > Read the text off the speedometers to get the speed of the car and stuff.
 
-3. Segmentation
+> Segmentation
     > Apply segmentation to the ingame footage/scenery.
 
-4. Style transfer (Available as a REST API)
+> Style transfer (Available as a REST API)
     > Apply real world lighting to the stock cars present in the shop.
     > Apply game environment to real world cars.
 
