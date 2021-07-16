@@ -1,0 +1,7 @@
+game/
+nfs_venv/
+side_projects/data_dumps/
+side_projects/ImageClassification/StockCarShops/.ipynb_checkpoints/
+side_projects/ImageClassification/StockCarShops/data(backup)/
+.gitignore-cp
+side_projects/ImageClassification/StockCarShops/data/
