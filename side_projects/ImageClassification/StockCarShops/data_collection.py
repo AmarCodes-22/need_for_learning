@@ -32,29 +32,31 @@ for file_name in os.listdir(paths['project_data_dump']):
 
 files = natsorted(files)
 
-#* Class names inferred from the directory structure
+#* Class names inferred from the directory structure(you have to make the directory structure first)
 class_names = []
 for dirpath, dirnames, filenames in os.walk(paths['project_data']):
     class_names = dirnames
     break
 
-#* Done only once
+#* Done only once(Temporary show for using shutil)
 # for i, file_name in enumerate(files):
 #     src_path = os.path.join(paths['project_data_dump'], file_name)
 #     dirname = os.path.join(paths['project_data_shutil'], class_names[i//25])
-    
 #     if not os.path.exists(paths['project_data_shutil']):
 #         os.system(f'mkdir {project_data_shutil_path}')
 #     if not os.path.exists(dirname):
 #         os.system(f'mkdir {dirname}')
-
 #     dst_path = os.path.join(dirname, file_name)
-
 #     shutil.copy(src_path, dst_path)
 
-
-
-
-
+#* Cropping the data to contain only the game screen
+#* Done only once
+# for dirpath, dirnames, filenames in os.walk(paths['project_data']):
+#     if len(filenames) > 0:
+#         for filename in filenames:
+#             filepath = os.path.join(dirpath, filename)
+#             img = cv.imread(filepath)
+#             img = img[175:525, 325:950]
+#             cv.imwrite(filepath, img)
 
 
