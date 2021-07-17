@@ -1,7 +1,8 @@
 import os
 from pathlib import Path
-from natsort import natsorted
 import shutil
+import random
+from natsort import natsorted
 import cv2 as cv
 
 #* Setting up paths
@@ -59,4 +60,25 @@ for dirpath, dirnames, filenames in os.walk(paths['project_data']):
 #             img = img[175:525, 325:950]
 #             cv.imwrite(filepath, img)
 
+#* Creating the train and test directories in each of the class folders
+#* Done once only
+# for dirpath, dirnames, filenames in os.walk(paths['project_data']):
+#     if len(filenames) > 0:
+#         train_dir_path = os.path.join(dirpath, 'train')
+#         test_dir_path = os.path.join(dirpath, 'test')
+#         if not os.path.exists(train_dir_path):
+#             os.system('mkdir {}'.format(train_dir_path))
+#         if not os.path.exists(test_dir_path):
+#             os.system('mkdir {}'.format(test_dir_path))
+#         test_files = random.sample(filenames, 5)
+#         for file in filenames:
+#             src_path = os.path.join(dirpath, file)
+#             if file in test_files:
+#                 dst_path = os.path.join(test_dir_path, file)
+#                 os.system('mv {} {}'.format(src_path, dst_path))
+#             else:
+#                 dst_path = os.path.join(train_dir_path, file)
+#                 os.system('mv {} {}'.format(src_path, dst_path))
 
+for dirpath, dirnames, filenames in os.walk(paths['project_data']):
+    print('There are {} directories, {} files in {}'.format(len(dirnames), len(filenames), dirpath))
