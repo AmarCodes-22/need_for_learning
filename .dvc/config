@@ -1,6 +1,4 @@
 [core]
     remote = correct_one
-['remote "myremote"']
-    url = gdrive://1jqmI29Nx5ThYGzWi0BrxuT5wrq5h0tFM
 ['remote "correct_one"']
     url = gdrive://1gZMterbtgKY0WPprB2Pb03hzA_ZxRrTa
