@@ -5,3 +5,5 @@ side_projects/ImageClassification/StockCarShops/.ipynb_checkpoints/
 side_projects/ImageClassification/StockCarShops/data(backup)/
 .gitignore-cp
 side_projects/ImageClassification/StockCarShops/data/
+side_projects/ImageClassification/StockCarShops/data_collection.ipynb
+plan.txt
