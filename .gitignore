@@ -2,3 +2,5 @@ game/
 nfs_venv/
 .gitignore-cp
 plan.txt
+__pycache__/
+basics.py
