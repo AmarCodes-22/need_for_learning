@@ -4,7 +4,7 @@ import numpy as np
 from screen_capture import ScreenCapture
 
 project_dir_path = os.getcwd()
-highway_video_path = os.path.join(project_dir_path, 'data', 'videos', 'highway_footage.avi')
+highway_video_path = os.path.join(project_dir_path, 'data', 'videos', 'highway_footage_bumper_view.avi')
 
 game_screen = ScreenCapture()
 screen_dim = game_screen.window_dim
