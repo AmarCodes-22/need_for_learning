@@ -5,6 +5,18 @@ from hsv_filter import HSVFilter
 
 hsv_filter = HSVFilter(0,0,200,30,255,255)
 
+def roi(frame, vertices):
+    b,g,r = cv.split(frame)
+
+    mask = np.ones_like(b)
+    cv.fillPoly(mask, vertices, 255)
+
+    masked_b = cv.bitwise_and(b, mask)
+    masked_g = cv.bitwise_and(g, mask)
+    masked_r = cv.bitwise_and(r, mask)
+    masked = cv.merge([masked_b, masked_g, masked_r])
+
+    return masked
 
 def preprocess(original_image):
     processed_image = cv.GaussianBlur(original_image, (7,7), 0)
@@ -12,16 +24,17 @@ def preprocess(original_image):
     return processed_image
 
 input_video_path = os.path.join(os.getcwd(), 'data', 'videos', 'highway_footage_tpp.avi')
+vertices = np.array([[0,480], [0,240], [80,200], [560,200], [640,240], [640,480], [480,480], [375,275], [275,275], [160,480]])
 cap = cv.VideoCapture(input_video_path)
 
 while True:
     ret, frame = cap.read()
+    
+    frame = roi(frame, [vertices])
+    # frame = hsv_filter.apply_filter(frame)
+    # frame = preprocess(hsv_frame)
 
-    hsv_frame = hsv_filter.apply_filter(frame)
-    hsv_edge_frame = preprocess(hsv_frame)
-
-    cv.imshow('with preprocessing', hsv_edge_frame)
-    # cv.imshow('without preprocessing', hsv_frame)
+    cv.imshow('test', frame)
     if cv.waitKey(10) == ord('q'):
         break
     
