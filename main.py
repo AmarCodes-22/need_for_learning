@@ -1,6 +1,7 @@
 from time import time
 import cv2 as cv
 from screen_capture import ScreenCapture
+from lane_detection import get_lanes
 
 game_screen = ScreenCapture()
 looptime = time()
@@ -8,7 +9,8 @@ count = 0
 
 while True:
     screenshot = game_screen.get_screenshot()
-    # cv.imshow('Original Game Screen', screenshot)
+    lanes = get_lanes(screenshot)
+    cv.imshow('Lanes', lanes)
 
     if count % 25 == 0:
         print('FPS: {}'.format(1/(time()-looptime)))

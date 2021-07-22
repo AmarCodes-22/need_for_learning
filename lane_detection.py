@@ -3,7 +3,10 @@ import cv2 as cv
 import numpy as np
 from hsv_filter import HSVFilter
 
-hsv_filter = HSVFilter(0,0,200,30,255,255)
+hsv_filter = HSVFilter(0,0,100,30,255,255)
+# input_video_path = os.path.join(os.getcwd(), 'data', 'videos', 'highway_footage_tpp.avi')
+vertices = np.array([[0,480], [0,240], [80,200], [560,200], [640,240], [640,480], [480,480], [375,275], [275,275], [160,480]])
+# cap = cv.VideoCapture(input_video_path)
 
 def roi(frame, vertices):
     b,g,r = cv.split(frame)
@@ -23,19 +26,8 @@ def preprocess(original_image):
     processed_image = cv.Canny(processed_image, 100, 200)
     return processed_image
 
-input_video_path = os.path.join(os.getcwd(), 'data', 'videos', 'highway_footage_tpp.avi')
-vertices = np.array([[0,480], [0,240], [80,200], [560,200], [640,240], [640,480], [480,480], [375,275], [275,275], [160,480]])
-cap = cv.VideoCapture(input_video_path)
-
-while True:
-    ret, frame = cap.read()
-    
+def get_lanes(frame):
     frame = roi(frame, [vertices])
-    # frame = hsv_filter.apply_filter(frame)
-    # frame = preprocess(hsv_frame)
-
-    cv.imshow('test', frame)
-    if cv.waitKey(10) == ord('q'):
-        break
-    
-cap.release()
+    frame = hsv_filter.apply_filter(frame)
+    frame = preprocess(frame)
+    return frame
