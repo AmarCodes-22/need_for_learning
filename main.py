@@ -2,13 +2,13 @@ from time import time
 import cv2 as cv
 from screen_capture import ScreenCapture
 
-
 game_screen = ScreenCapture()
 looptime = time()
 count = 0
+
 while True:
     screenshot = game_screen.get_screenshot()
-    cv.imshow('Game screen', screenshot)
+    # cv.imshow('Original Game Screen', screenshot)
 
     if count % 25 == 0:
         print('FPS: {}'.format(1/(time()-looptime)))
