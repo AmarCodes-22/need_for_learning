@@ -11,7 +11,10 @@ looptime = time.time()
 count = 0
 
 input_video_path = os.path.join(os.getcwd(), 'data', 'videos', 'highway_footage_tpp.avi')
+# output_video_path = os.path.join(os.getcwd(), 'data', 'outputs', 'highway_footage_tpp_pers_wo_morph.avi')
+
 cap = cv.VideoCapture(input_video_path)
+# out = cv.VideoWriter(output_video_path,cv.VideoWriter_fourcc('M','J','P','G'), 10, (640,480))
 
 while True:
     #* For live game footage
@@ -22,6 +25,7 @@ while True:
     #* For prerecorded videos
     ret, frame = cap.read()
     lanes = lane_detector.get_lanes(frame)
+    # out.write(lanes)
     cv.imshow('Lanes', lanes)
 
     if count % 25 == 0:
@@ -32,3 +36,5 @@ while True:
 
     if cv.waitKey(1) == ord('q'):
         break
+
+# out.release()
