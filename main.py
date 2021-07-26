@@ -1,6 +1,7 @@
 import os
 import time
 import cv2 as cv
+import numpy as np
 from screen_capture import ScreenCapture
 from lane_detection import LaneDetector
 
@@ -10,11 +11,21 @@ lane_detector = LaneDetector()
 looptime = time.time()
 count = 0
 
-input_video_path = os.path.join(os.getcwd(), 'data', 'videos', 'highway_footage_tpp.avi')
-# output_video_path = os.path.join(os.getcwd(), 'data', 'outputs', 'highway_footage_tpp_pers_wo_morph.avi')
+input_video_path = os.path.join(os.getcwd(), 
+                                'data', 
+                                'videos', 
+                                'highway_footage_tpp.avi')
+output_video_path = os.path.join(os.getcwd(), 
+                                 'data', 
+                                 'outputs', 
+                                 'highway_footage_tpp_pers_with_morph.avi')
 
 cap = cv.VideoCapture(input_video_path)
-# out = cv.VideoWriter(output_video_path,cv.VideoWriter_fourcc('M','J','P','G'), 10, (640,480))
+out = cv.VideoWriter(output_video_path,
+                     cv.VideoWriter_fourcc('M','J','P','G'),
+                     60,
+                     (640,480),
+                     0)
 
 while True:
     # * For live game footage
@@ -24,9 +35,15 @@ while True:
 
     # * For prerecorded videos
     ret, frame = cap.read()
-    lanes = lane_detector.get_lanes(frame)
-    # out.write(lanes)
-    cv.imshow('Lanes', lanes)
+    if ret:
+        lanes = lane_detector.get_lanes(frame)
+        # lanes = lanes[..., np.newaxis]
+        # print(lanes.shape)
+        out.write(lanes)
+        cv.imshow('Lanes', lanes)
+    else:
+        print('Video not read, Exiting')
+        break
 
     if count % 25 == 0:
         print('FPS: {}'.format(1 / (time.time() - looptime)))
@@ -37,4 +54,4 @@ while True:
     if cv.waitKey(1) == ord('q'):
         break
 
-# out.release()
+out.release()
