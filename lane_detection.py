@@ -35,7 +35,8 @@ class LaneDetector:
 
     def get_lanes(self, frame):
         # print(frame.shape)
-        frame = self.perspective_transform(frame)
+        # frame = self.perspective_transform(frame)
         frame = self.preprocess(frame)
-        frame = self.morphological(frame)
+        # frame = self.morphological(frame)
         return frame
+

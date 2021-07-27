@@ -14,11 +14,11 @@ count = 0
 input_video_path = os.path.join(os.getcwd(), 
                                 'data', 
                                 'videos', 
-                                'highway_footage_tpp.avi')
+                                'highway_footage_bumper_view.avi')
 output_video_path = os.path.join(os.getcwd(), 
                                  'data', 
                                  'outputs', 
-                                 'highway_footage_tpp_pers_with_morph.avi')
+                                 'highway_footage_bumper_view_wo_pers.avi')
 
 cap = cv.VideoCapture(input_video_path)
 out = cv.VideoWriter(output_video_path,
