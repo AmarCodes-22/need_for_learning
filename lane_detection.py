@@ -1,5 +1,9 @@
 import cv2 as cv
 import numpy as np
+from filters import HSVFilter, LABFilter
+
+hsv_filter = HSVFilter([25, 45, 0, 255, 175, 255])
+lab_filter = LABFilter([0, 255, 0, 255, 150, 255])
 
 class LaneDetector:
     def __init__(self):
@@ -34,9 +38,14 @@ class LaneDetector:
         return processed_image
 
     def get_lanes(self, frame):
+        frame_lab = lab_filter.apply_filter(frame)
+        frame_hsv = hsv_filter.apply_filter(frame)
+        frame = ((frame_lab//4) + (frame_hsv)) // 2
+        frame = cv.cvtColor(frame, cv.COLOR_BGR2GRAY)
+        frame = np.float32(frame)
         # print(frame.shape)
         # frame = self.perspective_transform(frame)
-        frame = self.preprocess(frame)
+        # frame = self.preprocess(frame)
         # frame = self.morphological(frame)
         return frame
 
