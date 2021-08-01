@@ -1,25 +1,24 @@
 import os
 import time
 import cv2 as cv
-import numpy as np
 from screen_capture import ScreenCapture
 from lane_detection import LaneDetector
 
 
-game_screen = ScreenCapture()
+# game_screen = ScreenCapture()
 lane_detector = LaneDetector()
 
 
 looptime = time.time()
 count = 0
 
-input_video_path = os.path.join(os.getcwd(), 
-                                'data', 
-                                'videos', 
+input_video_path = os.path.join(os.getcwd(),
+                                'data',
+                                'videos',
                                 'highway_footage_high_res_hood.avi')
-# output_video_path = os.path.join(os.getcwd(), 
-#                                  'data', 
-#                                  'outputs', 
+# output_video_path = os.path.join(os.getcwd(),
+#                                  'data',
+#                                  'outputs',
 #                                  'highway_footage_bumper_view_wo_pers.avi')
 
 cap = cv.VideoCapture(input_video_path)
@@ -30,22 +29,22 @@ cap = cv.VideoCapture(input_video_path)
 #                      0)
 
 while True:
+    #* For images
+    # Add code here
+
     # * For live game footage
-    screenshot = game_screen.get_screenshot()
-    lanes = lane_detector.get_lanes(screenshot)
-    cv.imshow('Lanes', lanes)
+    # screenshot = game_screen.get_screenshot()
+    # lanes = lane_detector.get_lanes(screenshot)
+    # cv.imshow('Lanes', lanes)
 
     # * For prerecorded videos
-    # ret, frame = cap.read()
-    # if ret:
-    #     lanes = lane_detector.get_lanes(frame)
-    #     # lanes = lanes[..., np.newaxis]
-    #     # print(lanes.shape)
-    #     # out.write(lanes)
-    #     cv.imshow('Lanes', lanes)
-    # else:
-    #     print('Video not read, Exiting')
-    #     break
+    ret, frame = cap.read()
+    if ret:
+        lanes = lane_detector.get_lanes(frame)
+        cv.imshow('Lanes', lanes)
+    else:
+        print('Video not read, Exiting')
+        break
 
     if count % 25 == 0:
         print('FPS: {}'.format(1 / (time.time() - looptime)))

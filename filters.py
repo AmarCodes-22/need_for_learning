@@ -48,48 +48,48 @@ class HSVFilter:
     
     return result
       
-  def get_new_filter(self, window_name='Trackbars'):
-    '''
-    Returns the new initialized state of the filter
-    Parameters:
-    self (HSVFilter object): The filter that takes the information from the trackbar window.
-    window_name (str): Name of the trackbar window.
-    Returns:
-    filter_object (HSVFilter object): The filter with new initialized values
-    '''
-    self.hmin = cv.getTrackbarPos('Hmin', window_name)
-    self.hmax = cv.getTrackbarPos('Hmax', window_name)
-    self.smin = cv.getTrackbarPos('Smin', window_name)
-    self.smax = cv.getTrackbarPos('Smax', window_name)
-    self.vmin = cv.getTrackbarPos('Vmin', window_name)
-    self.vmax = cv.getTrackbarPos('Vmax', window_name)
+  # def get_new_filter(self, window_name='Trackbars'):
+  #   '''
+  #   Returns the new initialized state of the filter
+  #   Parameters:
+  #   self (HSVFilter object): The filter that takes the information from the trackbar window.
+  #   window_name (str): Name of the trackbar window.
+  #   Returns:
+  #   filter_object (HSVFilter object): The filter with new initialized values
+  #   '''
+  #   self.hmin = cv.getTrackbarPos('Hmin', window_name)
+  #   self.hmax = cv.getTrackbarPos('Hmax', window_name)
+  #   self.smin = cv.getTrackbarPos('Smin', window_name)
+  #   self.smax = cv.getTrackbarPos('Smax', window_name)
+  #   self.vmin = cv.getTrackbarPos('Vmin', window_name)
+  #   self.vmax = cv.getTrackbarPos('Vmax', window_name)
     
-    # return self
+  #   # return self
   
-  @staticmethod  
-  def nothing(position):
-    '''
-    I do nothing.
-    Parameters:
-        position
-    '''
-    pass
+  # @staticmethod  
+  # def nothing(position):
+  #   '''
+  #   I do nothing.
+  #   Parameters:
+  #       position
+  #   '''
+  #   pass
   
-  @staticmethod
-  def create_trackbar_window(window_name='Trackbars'):
-    '''
-    Creates the trackbar in the window_name specified.
-    Parameters:
-        window_name (str): Window name for the trackbar window.
-    Returns:
-        None
-    '''
-    cv.createTrackbar('Hmin', window_name, 25, 179, HSVFilter.nothing)
-    cv.createTrackbar('Hmax', window_name, 45, 179, HSVFilter.nothing)
-    cv.createTrackbar('Smin', window_name, 0, 255, HSVFilter.nothing)
-    cv.createTrackbar('Smax', window_name, 225, 255, HSVFilter.nothing)
-    cv.createTrackbar('Vmin', window_name, 175, 255, HSVFilter.nothing)
-    cv.createTrackbar('Vmax', window_name, 255, 255, HSVFilter.nothing)
+  # @staticmethod
+  # def create_trackbar_window(window_name='Trackbars'):
+  #   '''
+  #   Creates the trackbar in the window_name specified.
+  #   Parameters:
+  #       window_name (str): Window name for the trackbar window.
+  #   Returns:
+  #       None
+  #   '''
+  #   cv.createTrackbar('Hmin', window_name, 25, 179, HSVFilter.nothing)
+  #   cv.createTrackbar('Hmax', window_name, 45, 179, HSVFilter.nothing)
+  #   cv.createTrackbar('Smin', window_name, 0, 255, HSVFilter.nothing)
+  #   cv.createTrackbar('Smax', window_name, 225, 255, HSVFilter.nothing)
+  #   cv.createTrackbar('Vmin', window_name, 175, 255, HSVFilter.nothing)
+  #   cv.createTrackbar('Vmax', window_name, 255, 255, HSVFilter.nothing)
 
 
 class LABFilter:
@@ -128,41 +128,41 @@ class LABFilter:
         
         return result
     
-    def get_new_filter(self, window_name='Trackbars'):
-        """
-        Gets the filter value from the trackbar window and restates the LAB filter object
-        Parameters:
-            self (LABFilter object):
-            window_name (str): Get the trackbar position from this window
-        Returns:
-            filter_object (LABFilter object): The new state of the filter object
-        """
-        self.lmin = cv.getTrackbarPos('Lmin', window_name)
-        self.lmax = cv.getTrackbarPos('Lmax', window_name)
-        self.amin = cv.getTrackbarPos('Amin', window_name)
-        self.amax = cv.getTrackbarPos('Amax', window_name)
-        self.bmin = cv.getTrackbarPos('Bmin', window_name)
-        self.bmax = cv.getTrackbarPos('Bmax', window_name)
+    # def get_new_filter(self, window_name='Trackbars'):
+    #     """
+    #     Gets the filter value from the trackbar window and restates the LAB filter object
+    #     Parameters:
+    #         self (LABFilter object):
+    #         window_name (str): Get the trackbar position from this window
+    #     Returns:
+    #         filter_object (LABFilter object): The new state of the filter object
+    #     """
+    #     self.lmin = cv.getTrackbarPos('Lmin', window_name)
+    #     self.lmax = cv.getTrackbarPos('Lmax', window_name)
+    #     self.amin = cv.getTrackbarPos('Amin', window_name)
+    #     self.amax = cv.getTrackbarPos('Amax', window_name)
+    #     self.bmin = cv.getTrackbarPos('Bmin', window_name)
+    #     self.bmax = cv.getTrackbarPos('Bmax', window_name)
     
-    @staticmethod
-    def nothing(position):
-        """
-        I do nothing
-        """
-        pass
+    # @staticmethod
+    # def nothing(position):
+    #     """
+    #     I do nothing
+    #     """
+    #     pass
     
-    @staticmethod
-    def create_trackbar_window(window_name:str = 'Trackbars'):
-        """
-        Creates trackbar in the window name specified.
-        Parameters:
-          window_name (str): The name of the window to make the trackbars in
-        Returns:
-          None
-        """
-        cv.createTrackbar('Lmin', window_name, 0, 255, LABFilter.nothing)
-        cv.createTrackbar('Lmax', window_name, 255, 255, LABFilter.nothing)
-        cv.createTrackbar('Amin', window_name, 0, 255, LABFilter.nothing)
-        cv.createTrackbar('Amax', window_name, 255, 255, LABFilter.nothing)
-        cv.createTrackbar('Bmin', window_name, 0, 255, LABFilter.nothing)
-        cv.createTrackbar('Bmax', window_name, 255, 255, LABFilter.nothing)
+    # @staticmethod
+    # def create_trackbar_window(window_name:str = 'Trackbars'):
+    #     """
+    #     Creates trackbar in the window name specified.
+    #     Parameters:
+    #       window_name (str): The name of the window to make the trackbars in
+    #     Returns:
+    #       None
+    #     """
+    #     cv.createTrackbar('Lmin', window_name, 0, 255, LABFilter.nothing)
+    #     cv.createTrackbar('Lmax', window_name, 255, 255, LABFilter.nothing)
+    #     cv.createTrackbar('Amin', window_name, 0, 255, LABFilter.nothing)
+    #     cv.createTrackbar('Amax', window_name, 255, 255, LABFilter.nothing)
+    #     cv.createTrackbar('Bmin', window_name, 0, 255, LABFilter.nothing)
+    #     cv.createTrackbar('Bmax', window_name, 255, 255, LABFilter.nothing)
