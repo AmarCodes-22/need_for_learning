@@ -16,17 +16,39 @@ class LaneDetector:
         # self.pts2 = np.float32([[0, 0], [640, 0], [0, 480], [640, 480]])
         # self.matrix = cv.getPerspectiveTransform(self.pts1, self.pts2)
 
-    def get_hough_lines(self, image):
-        lines = cv.HoughLinesP(np.uint8(image), 1, np.pi/180, 50, minLineLength=75, maxLineGap=100)
-        return lines
-        # if lines is not None:
-        #     for line in lines:
-        #         coords = line[0]
-        #         x1, y1, x2, y2 = coords
-        #         pt1, pt2 = (x1, y1), (x2, y2)
-        #         cv.line(image, pt1, pt2, (255,255,255), 3, cv.LINE_4)
+    def get_hough_lines(self, processed_image, original_image):
+        '''
+        Draws the lines from processed image as detected by 
+        hough-lines algorithm onto the original image
+        parameters:
+            processed_image (np.ndarray): Thresholded grayscale image containing lanes
+            original_image (np.ndarray): Original color frame from the game/video
+        Returns:
+            lines (np.ndarray): points returned in x1, y1, x2, y2 format
+        '''
+        lines = cv.HoughLinesP(np.uint8(processed_image), 1, np.pi/180, 50, minLineLength=75, maxLineGap=100)
+        if lines is not None:
+            for line in lines:
+                coords = line[0]
+                x1, y1, x2, y2 = coords
+                pt1, pt2 = (x1, y1), (x2, y2)
+                angle = np.arctan2(y2 - y1, x2 - x1) * 180. / np.pi
+                if 30 < abs(angle) < 60:
+                    cv.line(original_image, pt1, pt2, (0,255,0), 3, cv.LINE_4)
+        # print(lines)
+        return original_image
 
     def get_lanes(self, original_frame):
+        '''
+        Main function of the class, returns the original frame with lanes detected.
+        Converts the original frame into seperate parts for filtering
+        Processes the image
+        Draws lines on the original image
+        Parameters:
+            original_frame (np.ndarray): The original color frame from the game/video
+        Returns:
+            original_frame (np.ndarray): The original frame is returned but now with lanes detected
+        '''
         # cv.imshow('Test', original_frame)
         frame_lab = lab_filter.apply_filter(original_frame)
         frame_hsv = hsv_filter.apply_filter(original_frame)
@@ -39,23 +61,19 @@ class LaneDetector:
         processsed_frame = self.cleaner(processsed_frame, [self.roi_vertices], [self.ref_vertices])
         processsed_frame = self.morphological(processsed_frame)
 
-        lines = self.get_hough_lines(processsed_frame)
-        if lines is not None:
-            for line in lines:
-                coords = line[0]
-                x1, y1, x2, y2 = coords
-                pt1, pt2 = (x1, y1), (x2, y2)
-                angle = np.arctan2(y2 - y1, x2 - x1) * 180. / np.pi
-                if 30 < abs(angle) < 60:
-                    cv.line(original_frame, pt1, pt2, (0,255,0), 3, cv.LINE_4)
+        original_frame = self.get_hough_lines(processsed_frame, original_frame)
 
         return original_frame
-
 
     @staticmethod
     def cleaner(frame, roi_points, ref_points, draw_lines=False):
         '''
         Cleans the thresholded image by applying the roi and removing the road reflections
+        parameters:
+            roi_points (np.ndarray): Polygon defining the ROI
+            ref_points (np.ndarray): Polygon defining the area with car reflections
+        Returns:
+            masked (np.ndarray): The array returned without reflections and defined ROI.
         '''
         mask_roi = np.zeros_like(frame)
         mask_ref = np.ones_like(frame)
@@ -75,5 +93,10 @@ class LaneDetector:
 
     @staticmethod
     def morphological(frame):
+        '''
+        Dilates the points to make them clearer to see.
+        Parameters:
+            frame (np.ndarray): Thresholded black and white frame.
+        '''
         frame = cv.dilate(frame, (3,3))
         return frame
