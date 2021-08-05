@@ -28,6 +28,8 @@ cap = cv.VideoCapture(input_video_path)
 #                      (640,480),
 #                      0)
 
+frame_count = 0
+
 while True:
     #* For images
     # Add code here
@@ -46,13 +48,18 @@ while True:
         print('Video not read, Exiting')
         break
 
-    if count % 25 == 0:
-        print('FPS: {}'.format(1 / (time.time() - looptime)))
-        count = 0
-    looptime = time.time()
-    count += 1
+    # if count % 25 == 0:
+    #     print('FPS: {}'.format(1 / (time.time() - looptime)))
+    #     count = 0
+    # looptime = time.time()
+    # count += 1
 
     if cv.waitKey(1) == ord('q'):
         break
+    # elif cv.waitKey(0) == ord('j'):
+    #     continue
 
+# print('Both sides', lane_detector.count_both_sides, '\n', 
+#       'one side', lane_detector.count_one_side, '\n', 
+#       'no line', lane_detector.no_line)
 # out.release()

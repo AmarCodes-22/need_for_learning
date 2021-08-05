@@ -9,7 +9,7 @@ project_dir_path = os.getcwd()
 output_video_path = os.path.join(project_dir_path, 
                                  'data', 
                                  'videos', 
-                                 'highway_footage_high_res_hood.avi')
+                                 'highway_footage_straight_hood.avi')
 images_path = os.path.join(project_dir_path, 
                            'data', 
                            'images')
