@@ -1,6 +1,9 @@
 from os import error
 import cv2 as cv
 import numpy as np
+from numpy.core.defchararray import count
+import seaborn as sns
+import matplotlib.pyplot as plt
 from filters import HSVFilter, LABFilter
 from utils import Cache, draw_line
 
@@ -13,13 +16,13 @@ class LaneDetector:
     count_both_sides, count_one_side, no_line = 0, 0, 0
 
     def __init__(self):
-        self.roi_vertices = np.array([[0, 480], [0, 280], [160, 200], [480, 200], [640, 280], [640, 480]], np.int32)
-        self.ref_vertices = np.array([[120, 440], [240, 300], [400, 300], [520, 440]], np.int32)
-        self.roi_vertices.reshape((-1,1,2))
+        self.roi = np.float32([[220, 240], [420, 240], [600, 360], [40, 360]])
+        self.ref_vertices = np.array([[120, 480], [240, 300], [400, 300], [520, 480]], np.int32)
         self.ref_vertices.reshape((-1,1,2))
-        self.pers1 = np.float32([[160, 200], [480, 200], [40, 360], [600, 360]])
+        self.pers1 = np.float32([[220, 240], [420, 240], [40, 360], [600, 360]])
         self.pers2 = np.float32([[0, 0], [640, 0], [0, 480], [640, 480]])
         self.pers_matrix = cv.getPerspectiveTransform(self.pers1, self.pers2)
+        self.rows = np.arange(1, 481)
 
     def get_lanes(self, original_frame):
         '''
@@ -32,103 +35,105 @@ class LaneDetector:
         Returns:
             original_frame (np.ndarray): The original frame is returned but now with lanes detected
         '''
-        frame_lab = lab_filter.apply_filter(original_frame)
-        frame_hsv = hsv_filter.apply_filter(original_frame)
+        warped = cv.warpPerspective(original_frame, self.pers_matrix, (640, 480))
 
-        processed_frame = ((frame_lab // 2) + (frame_hsv * 2)) // 2
-        processed_frame = cv.cvtColor(processed_frame, cv.COLOR_BGR2GRAY)
+        frame_lab = lab_filter.apply_filter(warped)
+        frame_hsv = hsv_filter.apply_filter(warped)
+        frame_lab_b = frame_lab[:, :, 2]/255.
+        frame_hsv_h = frame_hsv[:, :, 0]/255.
+        frame_hsv_v = frame_hsv[:, :, 2]/255.
 
-        ret, processed_frame = cv.threshold(processed_frame, 75, 255, cv.THRESH_BINARY)
+        filtered_frame = (frame_lab_b + frame_hsv_h + frame_hsv_v) / 3
+        ret, filtered_frame = cv.threshold(filtered_frame, 75/255, 255/255, cv.THRESH_BINARY)
 
-        processed_frame = self.cleaner(processed_frame, [self.roi_vertices], [self.ref_vertices])
-        processed_frame = self.morphological(processed_frame)
+        filtered_frame = self.cleaner(filtered_frame, [self.ref_vertices])
 
-        warped = cv.warpPerspective(processed_frame, self.pers_matrix, (640, 480))
-        lines = self.get_hough_lines(warped)
-        print(lines)
-        lines_on_warped = draw_line(warped, lines)
+        weights = np.square(filtered_frame * self.rows[:, np.newaxis])
+        weighted_counts = np.sum(weights, axis=0)
 
-        # sorted_lines = np.sort(lines, axis=0)
-        # processed_frame = cv.polylines(processed_frame, [self.pers1], True, (255), 2)
-        # lanes = self.validate_lines(lines)
-        # processed_frame = self.color_it(original_frame, lanes)
-        return lines_on_warped
-        # return processed_frame
-    
-    def get_hough_lines(self, processed_image):
-        '''
-        Draws the lines from processed image as detected by 
-        hough-lines algorithm onto the original image
-        parameters:
-            processed_image (np.ndarray): Thresholded grayscale image containing lanes
-            original_image (np.ndarray): Original color frame from the game/video
+        left_x_base = np.array([np.argmax(weighted_counts[:320]), 456])
+        right_x_base = np.array([np.argmax(weighted_counts[320:]) + 320, 456])
+
+        filtered_frame = self.find_lanes(filtered_frame, left_x_base, right_x_base)
+
+        return filtered_frame
+
+    def find_lanes(self, frame, left_base, right_base):
+        """Finds a polynomial fit to the lanes in the frame
+
+        Args:
+            frame (np.ndarray): The thresholded image with the lanes detected
+            left_base (nd.ndarray): the base of the left lane
+            right_base (np.ndarray): the base of the right lane
+
         Returns:
-            lines (np.ndarray): points returned in x1, y1, x2, y2 format
-        '''
-        lines = cv.HoughLinesP(np.uint8(processed_image), 1, np.pi/180, 25, minLineLength=25, maxLineGap=100)
-        lines_and_angles = []
-        if lines is not None:
-            for line in lines:
-                coords = line[0]
-                x1, y1, x2, y2 = coords
-                angle = int(np.arctan2(y2 - y1, x2 - x1) * 180. / np.pi)
+            frame (np.ndarray): The binary frame with the polyfit for the lanes
+        """
+        left_lane_xs, right_lane_xs, left_lane_ys, right_lane_ys = list(), list(), list(), list()
+        left_shift_y, right_shift_y, left_shift_x, right_shift_x = 24, 24, 32, 32
+        for _ in range(10):
+            frame = cv.rectangle(frame, 
+                                (left_base[0]-32, left_base[1]-24), 
+                                (left_base[0]+32, left_base[1]+24), 
+                                (255), 
+                                2, 
+                                cv.LINE_4)
+            frame = cv.rectangle(frame, 
+                                (right_base[0]-32, right_base[1]-24), 
+                                (right_base[0]+32, right_base[1]+24), 
+                                (255), 
+                                2, 
+                                cv.LINE_4)
+            frame = cv.circle(frame, left_base, 10, (255), 2)
+            frame = cv.circle(frame, right_base, 10, (255), 2)
 
-                if 15 < abs(angle) < 60:
-                    lines_and_angles.append([x1, y1, x2, y2, angle])
+            little_left_box = frame[left_base[1]-left_shift_y:left_base[1]+left_shift_y,
+                                    left_base[0]-left_shift_x:left_base[0]+left_shift_x] 
+            little_right_box = frame[right_base[1]-right_shift_y:right_base[1]+right_shift_y,
+                                     right_base[0]-right_shift_x:right_base[0]+right_shift_x]
 
-        return np.array(lines_and_angles)
+            left_lane_y, left_lane_x = np.where(little_left_box == 1)
+            right_lane_y, right_lane_x = np.where(little_right_box == 1)
 
-    def validate_lines(self, lines):
-        final_lines = []
-        if len(lines) < 2:
-            final_lanes = cache.get_from_cache()
-            return np.array(final_lanes, dtype=np.int32)
+            left_lane_xs += list(left_lane_x)
+            right_lane_xs += list(right_lane_x)
+            left_lane_ys += list(left_lane_y)
+            right_lane_ys += list(right_lane_y)
 
-        if len(lines) >= 2:
-            angle_med = np.median(lines, axis=0)[4]
+            if len(left_lane_x) > 0:
+                little_left_box_x_avg = np.mean(left_lane_x)
+                little_left_box_x_avg += [left_base[0] - left_shift_x]
+                diff = little_left_box_x_avg[0] - left_base[0]
 
-            left_mask = np.where(lines[:, 4] <= angle_med)
-            right_mask = np.where(lines[:, 4] >= angle_med)
-
-            left_lines = lines[left_mask]
-            right_lines = lines[right_mask]
-
-            left_y1_med, left_y2_med = np.median(left_lines, axis=0)[[1, 3]]
-            right_y1_med, right_y2_med = np.median(right_lines, axis=0)[[1, 3]]
-            
-            if left_y1_med < left_y2_med:
-                final_left_y1 = min(left_lines[:, 1])
-                final_left_y2 = max(left_lines[:, 3])
-                final_left_x1 = left_lines[np.where(left_lines[:, 1] == final_left_y1)[0]][:, 0][0]
-                final_left_x2 = left_lines[np.where(left_lines[:, 3] == final_left_y2)[0]][:, 2][0]
-                final_lines.append([final_left_x1, final_left_y1, final_left_x2, final_left_y2])
-
+                if diff < 0:
+                    left_base = left_base + [int(diff), -48]
+                    left_shift_x -= int(diff)
+                elif diff >= 0: 
+                    left_base = left_base + [int(diff), -48]
+                    left_shift_x += int(diff)
             else:
-                final_left_y1 = max(left_lines[:, 1])
-                final_left_y2 = min(left_lines[:, 3])
-                final_left_x1 = left_lines[np.where(left_lines[:, 1] == final_left_y1)[0]][:, 0][0]
-                final_left_x2 = left_lines[np.where(left_lines[:, 3] == final_left_y2)[0]][:, 2][0]
-                final_lines.append([final_left_x1, final_left_y1, final_left_x2, final_left_y2])
+                little_left_box_x_avg = None
+                left_base = left_base + [0, -48]
 
-            if right_y1_med < right_y2_med:
-                final_right_y1 = min(right_lines[:, 1])
-                final_right_y2 = max(right_lines[:, 3])
-                final_right_x1 = right_lines[np.where(right_lines[:, 1] == final_right_y1)[0]][:, 0][0]
-                final_right_x2 = right_lines[np.where(right_lines[:, 3] == final_right_y2)[0]][:, 2][0]
-                final_lines.append([final_right_x1, final_right_y1, final_right_x2, final_right_y2])
+            if len(right_lane_x) > 0:
+                little_right_box_x_avg = np.mean(right_lane_x)
+                little_right_box_x_avg += [right_base[0] - right_shift_x]
+                diff = little_right_box_x_avg - right_base[0]
 
+                if diff < 0:
+                    right_base = right_base + [int(diff), -48]
+                    right_shift_x -= int(diff)
+                elif diff >= 0: 
+                    right_base = right_base + [int(diff), -48]
+                    right_shift_x += int(diff)
             else:
-                final_right_y1 = max(right_lines[:, 1])
-                final_right_y2 = min(right_lines[:, 3])
-                final_right_x1 = right_lines[np.where(right_lines[:, 1] == final_right_y1)[0]][:, 0][0]
-                final_right_x2 = right_lines[np.where(right_lines[:, 3] == final_right_y2)[0]][:, 2][0]
-                final_lines.append([final_right_x1, final_right_y1, final_right_x2, final_right_y2])
-        
-            cache.store_in_cache(final_lines)
-            return np.array(final_lines, dtype=np.int32)
+                little_right_box_x_avg = None
+                right_base = right_base + [0, -48]
+
+        return frame 
 
     @staticmethod
-    def cleaner(frame, roi_points, ref_points):
+    def cleaner(frame, ref_points):
         '''
         Cleans the thresholded image by applying the roi and removing the road reflections
         parameters:
@@ -137,16 +142,16 @@ class LaneDetector:
         Returns:
             masked (np.ndarray): The array returned without reflections and defined ROI.
         '''
-        mask_roi = np.zeros_like(frame)
-        # mask_ref = np.ones_like(frame)
+        # mask_roi = np.zeros_like(frame)
+        mask_ref = np.ones_like(frame)
 
-        mask_roi = cv.fillPoly(mask_roi, roi_points, 1)
-        # mask_ref = cv.fillPoly(mask_ref, ref_points, 0)
+        # mask_roi = cv.fillPoly(mask_roi, roi_points, 1)
+        mask_ref = cv.fillPoly(mask_ref, ref_points, 0)
 
-        masked_roi = cv.bitwise_and(frame, mask_roi)
-        # masked_ref = cv.bitwise_and(frame, mask_ref)
+        # masked_roi = cv.bitwise_and(frame, mask_roi)
+        masked_ref = cv.bitwise_and(frame, mask_ref)
         # masked = cv.bitwise_and(masked_roi, masked_ref)
-        masked = np.array(masked_roi, dtype=np.float32)
+        masked = np.array(masked_ref, dtype=np.float32)
         return masked
 
     @staticmethod

@@ -15,20 +15,9 @@ count = 0
 input_video_path = os.path.join(os.getcwd(),
                                 'data',
                                 'videos',
-                                'highway_footage_high_res_hood.avi')
-# output_video_path = os.path.join(os.getcwd(),
-#                                  'data',
-#                                  'outputs',
-#                                  'highway_footage_bumper_view_wo_pers.avi')
+                                'highway_footage_straight_hood.avi')
 
 cap = cv.VideoCapture(input_video_path)
-# out = cv.VideoWriter(output_video_path,
-#                      cv.VideoWriter_fourcc('M','J','P','G'),
-#                      60,
-#                      (640,480),
-#                      0)
-
-frame_count = 0
 
 while True:
     #* For images
@@ -48,18 +37,13 @@ while True:
         print('Video not read, Exiting')
         break
 
-    # if count % 25 == 0:
-    #     print('FPS: {}'.format(1 / (time.time() - looptime)))
-    #     count = 0
-    # looptime = time.time()
-    # count += 1
+    if count % 25 == 0:
+        print('FPS: {}'.format(1 / (time.time() - looptime)))
+        count = 0
+    looptime = time.time()
+    count += 1
 
-    if cv.waitKey(1) == ord('q'):
+    if cv.waitKey(0) == ord('q'):
         break
-    # elif cv.waitKey(0) == ord('j'):
-    #     continue
 
-# print('Both sides', lane_detector.count_both_sides, '\n', 
-#       'one side', lane_detector.count_one_side, '\n', 
-#       'no line', lane_detector.no_line)
 # out.release()
