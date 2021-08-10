@@ -70,8 +70,9 @@ class LaneDetector:
             frame (np.ndarray): The binary frame with the polyfit for the lanes
         """
         left_lane_xs, right_lane_xs, left_lane_ys, right_lane_ys = list(), list(), list(), list()
-        left_shift_y, right_shift_y, left_shift_x, right_shift_x = 24, 24, 32, 32
-        for _ in range(10):
+        shift_corr_left_lane, shift_corr_right_lane = left_base[0]-32, right_base[0]-32
+        cache_left_diff, cache_right_diff = 0, 0
+        for i in range(10):
             frame = cv.rectangle(frame, 
                                 (left_base[0]-32, left_base[1]-24), 
                                 (left_base[0]+32, left_base[1]+24), 
@@ -84,51 +85,80 @@ class LaneDetector:
                                 (255), 
                                 2, 
                                 cv.LINE_4)
-            frame = cv.circle(frame, left_base, 10, (255), 2)
-            frame = cv.circle(frame, right_base, 10, (255), 2)
+            # frame = cv.circle(frame, left_base, 10, (255), 2)
+            # frame = cv.circle(frame, right_base, 10, (255), 2)
 
-            little_left_box = frame[left_base[1]-left_shift_y:left_base[1]+left_shift_y,
-                                    left_base[0]-left_shift_x:left_base[0]+left_shift_x] 
-            little_right_box = frame[right_base[1]-right_shift_y:right_base[1]+right_shift_y,
-                                     right_base[0]-right_shift_x:right_base[0]+right_shift_x]
 
+            #* Getting the little boxes
+            little_left_box = frame[left_base[1]-24:left_base[1]+24,
+                                    left_base[0]-32:left_base[0]+32] 
+            little_right_box = frame[right_base[1]-24:right_base[1]+24,
+                                     right_base[0]-32:right_base[0]+32]
+
+            #* Getting the lane pixel coordinates
             left_lane_y, left_lane_x = np.where(little_left_box == 1)
             right_lane_y, right_lane_x = np.where(little_right_box == 1)
 
+            #* Shifting the points
+            left_lane_x += shift_corr_left_lane
+            right_lane_x += shift_corr_right_lane
+            left_lane_y += i * 48
+            right_lane_y += i * 48
+
+            #* Adding the pixels from the current box to the list of the whole lane
             left_lane_xs += list(left_lane_x)
             right_lane_xs += list(right_lane_x)
             left_lane_ys += list(left_lane_y)
             right_lane_ys += list(right_lane_y)
+            
+            # if len(left_lane_xs) > 0: 
+                # print(max(left_lane_xs), max(right_lane_xs), max(left_lane_ys), max(right_lane_ys))
+                # print(max(left_lane_xs))
 
+            #* Left lane detection
             if len(left_lane_x) > 0:
-                little_left_box_x_avg = np.mean(left_lane_x)
-                little_left_box_x_avg += [left_base[0] - left_shift_x]
-                diff = little_left_box_x_avg[0] - left_base[0]
+                #* average correction
+                weight = len(left_lane_x)/300
+                little_left_box_x_avg = int(np.mean(left_lane_x))
+                left_diff = int(little_left_box_x_avg - left_base[0])
+                # print('base', left_base[0], 'average', little_left_box_x_avg, 'diff', left_diff,  'weight', int(weight), 'shift', shift_corr_left_lane)
 
-                if diff < 0:
-                    left_base = left_base + [int(diff), -48]
-                    left_shift_x -= int(diff)
-                elif diff >= 0: 
-                    left_base = left_base + [int(diff), -48]
-                    left_shift_x += int(diff)
+                #* base shifting
+                if left_diff < 0:
+                    left_base = left_base + [int(left_diff * weight), -48]
+                    shift_corr_left_lane += int(left_diff * weight)
+                    cache_left_diff = left_diff
+                elif left_diff >= 0: 
+                    left_base = left_base + [left_diff, -48]
+                    shift_corr_left_lane += left_diff
+                    cache_left_diff = left_diff
             else:
                 little_left_box_x_avg = None
-                left_base = left_base + [0, -48]
+                # print('base', left_base[0], 'average', little_left_box_x_avg, 'diff', cache_left_diff, 'weight', int(weight), 'shift', shift_corr_left_lane)
+                left_base = left_base + [cache_left_diff, -48]
+                shift_corr_left_lane += cache_left_diff
+            
 
+            #* Right lane detection
             if len(right_lane_x) > 0:
-                little_right_box_x_avg = np.mean(right_lane_x)
-                little_right_box_x_avg += [right_base[0] - right_shift_x]
-                diff = little_right_box_x_avg - right_base[0]
-
-                if diff < 0:
-                    right_base = right_base + [int(diff), -48]
-                    right_shift_x -= int(diff)
-                elif diff >= 0: 
-                    right_base = right_base + [int(diff), -48]
-                    right_shift_x += int(diff)
+                #* average correction
+                weight = len(right_lane_x)/300
+                little_right_box_x_avg = int(np.mean(right_lane_x))
+                right_diff = int(little_right_box_x_avg - right_base[0])
+                
+                #* base shifting
+                if right_diff < 0:
+                    right_base = right_base + [right_diff, -48]
+                    shift_corr_right_lane += right_diff
+                    cache_right_diff = right_diff
+                elif right_diff >= 0: 
+                    right_base = right_base + [int(right_diff * weight), -48]
+                    shift_corr_right_lane += int(right_diff * weight)
+                    cache_right_diff = right_diff
             else:
                 little_right_box_x_avg = None
-                right_base = right_base + [0, -48]
+                right_base = right_base + [cache_right_diff, -48]
+                shift_corr_right_lane += cache_right_diff
 
         return frame 
 
@@ -170,6 +200,3 @@ class LaneDetector:
         lanes = lanes.reshape((-1, 1, 2))[:,0,:]
         colored = cv.fillPoly(original_frame, [lanes], color=(0, 255, 0))
         return colored
-
-# todo Define a smaller and more accurate ROI, and use it for perspective transform.
-# todo Color the box made by the points from the previous step.
