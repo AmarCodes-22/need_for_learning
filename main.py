@@ -43,7 +43,7 @@ while True:
     looptime = time.time()
     count += 1
 
-    if cv.waitKey(0) == ord('q'):
+    if cv.waitKey(1) == ord('q'):
         break
 
 # out.release()

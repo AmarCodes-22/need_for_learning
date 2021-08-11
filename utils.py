@@ -4,21 +4,22 @@ from numpy.lib.type_check import imag
 
 class Cache:
     def __init__(self):
-        self.past = list()
-        pass
+        self.left_points = list()
+        self.right_points = list()
 
-    def store_in_cache(self, lines):
-        self.past.append(lines)
-        if len(self.past) == 6:
-            self.past.pop(0)
+    def store_in_cache(self, points, lane:str):
+        if lane == 'left':
+            self.left_points = list()
+            self.left_points.append(points)
+        elif lane == 'right':
+            self.right_points = list()
+            self.right_points.append(points)
 
-    def get_from_cache(self):
-        lanes = np.array(self.past)
-        # print(np.array(np.median(lanes, axis=0), dtype=np.uint8))
-        return np.array(np.median(lanes, axis=0), dtype=np.uint8)
-
-
-def draw_line(image, lines):
-    for line in lines:
-        image = cv.line(image, line[0:2], line[2:4], (255), thickness=3)
-    return image
+    def get_from_cache(self, lane:str):
+        if lane == 'left':
+            ret = np.array(self.left_points)
+            return ret
+        elif lane == 'right':
+            ret = np.array(self.right_points)
+            return ret
+        
