@@ -78,5 +78,4 @@ We merge this back with the original image to get the final output picture.
 
 References to the people that i followed to complete this project.  
 [For screen capture and color space filtering: ](https://www.youtube.com/playlist?list=PL1m2M8LQlzfKtkKq2lK5xko4X-8EZzFPI) checkout video 4 and 6.  
-
 [For lane detection: ](https://www.youtube.com/watch?v=VyLihutdsPk&t=1441s)
