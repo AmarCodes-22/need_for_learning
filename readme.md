@@ -21,7 +21,7 @@ Usually images are in the **RGB** color space. OpenCV works with **BGR** that is
 __Explanation__  
 
 The H channel contains the color in the image. In OpenCV the minumum and maximum values are 0 and 180 respectively. I use the range (25, 45) to get the colors yellow and orange.  
-The S channel contains the saturation in the image. High saturation means more color and lower saturation is more grayscale. OpenCV uses the range (0, 255).  
+The S channel contains the saturation in the image. High saturation means more distinguished color and lower saturation is more grayscale. OpenCV uses the range (0, 255).  
 The V channel contains the value, ie the brightness of the pixels. This channel can be used to seperate out the white lanes from the surroundings as the white pixels have higher value. OpenCV uses the range (0, 255)
 
 #### LAB  
@@ -38,5 +38,10 @@ Combining the 3 channels from the color spaces and thresholding it, we are able 
 
 We can see that the B channel from LAB color space filters the yellow lanes on the sides of the road.  
 
-
 Subtask 3: Lane detection  
+We don't perform the lane detection on the complete image, instead we crop out a part of the image and use that to perform the lane detection.  
+The cropped out part of the image looks like this.  
+
+![](https://github.com/AmarCodes-22/need_for_learning/blob/main/readme_stuff/roi_smol.png)
+
+

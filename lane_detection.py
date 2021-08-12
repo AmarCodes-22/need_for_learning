@@ -230,12 +230,13 @@ class LaneDetector:
         # mask_roi = np.zeros_like(frame)
         mask_ref = np.ones_like(frame)
 
-        # mask_roi = cv.fillPoly(mask_roi, roi_points, 1)
+        # mask_roi = cv.fillPoly(mask_roi, ref_points, 1)
         mask_ref = cv.fillPoly(mask_ref, ref_points, 0)
 
         # masked_roi = cv.bitwise_and(frame, mask_roi)
         masked_ref = cv.bitwise_and(frame, mask_ref)
-        # masked = cv.bitwise_and(masked_roi, masked_ref)
+
+        # masked = cv.bitwise_and(masked_roi, masked_roi)
         masked = np.array(masked_ref, dtype=np.float32)
         return masked
 
