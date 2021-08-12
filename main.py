@@ -31,6 +31,7 @@ while True:
     # * For prerecorded videos
     ret, frame = cap.read()
     if ret:
+        # frame = cv.resize(frame, (640, 480))
         lanes = lane_detector.get_lanes(frame)
         cv.imshow('Lanes', lanes)
     else:

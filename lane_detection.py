@@ -64,10 +64,9 @@ class LaneDetector:
         blank = cv.fillPoly(blank, [self.roi], (0, 0, 0))
         # print(blank.dtype, original_frame.dtype)
         original_masked = cv.bitwise_and(original_frame, blank)
-        test = cv.bitwise_or(original_masked, unwarped)
-        # result = cv.addWeighted(original_masked, 1, unwarped, 0.5, 0)
+        result = cv.bitwise_or(original_masked, unwarped)
 
-        return test
+        return result
     
     def fit_and_draw(self, original_frame, lanes):
         """Takes the points that are considered to be in the lane 
