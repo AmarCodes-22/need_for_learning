@@ -15,7 +15,7 @@ Using this approach i was able to achieve upwards of **120 fps** (if only my scr
 Color spaces can be used to filter out the parts of an image with certain colors. Lane lines are usually **white** or **yellow**. To filter out these colors, i used two color spaces: HSV and LAB.  
 #### HSV  
 Usually images are in the **RGB** color space. OpenCV works with **BGR** that is just inverted RGB (similar enough). In **HSV** format, the images are converted to have 3 channels (H: Hue, S: Saturation, V:Value).  
-![](https://github.com/AmarCodes-22/need_for_learning/blob/main/readme_stuff/HSV_color_space.png)
+![](https://github.com/AmarCodes-22/need_for_learning/blob/main/readme_stuff/HSV_color_space_smol.png)
 
 
 Subtask 3: Lane detection  
