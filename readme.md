@@ -44,4 +44,23 @@ The cropped out part of the image looks like this.
 
 ![](https://github.com/AmarCodes-22/need_for_learning/blob/main/readme_stuff/roi_smol.png)
 
+We also change the perspective of the image to get a bird's eye view of the roi.  
+The converted image looks like this.  
 
+![](https://github.com/AmarCodes-22/need_for_learning/blob/main/readme_stuff/warped_smol.png)  
+
+After this we filter this warped frame using color space filtering.
+
+![](https://github.com/AmarCodes-22/need_for_learning/blob/main/readme_stuff/warped_filtered_smol.png)  
+
+We apply lane detection on this image draw those lines back onto the color warped image.
+
+![](https://github.com/AmarCodes-22/need_for_learning/blob/main/readme_stuff/warped_and_lanes_drawn_smol.png)  
+
+Now we undo the warp to get this image.
+
+![](https://github.com/AmarCodes-22/need_for_learning/blob/main/readme_stuff/unwarped_and_lanes_drawn_smol.png)  
+
+We merge this back with the original image to get the final output picture.
+
+![](https://github.com/AmarCodes-22/need_for_learning/blob/main/readme_stuff/original_and_lanes.png)
