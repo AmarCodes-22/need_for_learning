@@ -40,7 +40,7 @@ Combining the 3 channels from the color spaces and thresholding it, we are able 
 
 We can see that the B channel from LAB color space filters the yellow lanes on the sides of the road.  
 
-Subtask 3: Lane detection  
+### Subtask 3: Lane detection  
 We don't perform the lane detection on the complete image, instead we crop out a part of the image and use that to perform the lane detection.  
 The cropped out part of the image looks like this.  
 
