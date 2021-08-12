@@ -18,6 +18,8 @@ input_video_path = os.path.join(os.getcwd(),
                                 'highway_footage_straight_hood.avi')
 
 cap = cv.VideoCapture(input_video_path)
+readme_stuff_path = os.path.join(os.getcwd(),
+                                'readme_stuff')
 
 while True:
     #* For images
@@ -34,6 +36,7 @@ while True:
         # frame = cv.resize(frame, (640, 480))
         lanes = lane_detector.get_lanes(frame)
         cv.imshow('Lanes', lanes)
+        # cv.imwrite(os.path.join(readme_stuff_path, 'frame_hsv_h.png'), lanes)
     else:
         print('Video not read, Exiting')
         break
@@ -44,7 +47,7 @@ while True:
     looptime = time.time()
     count += 1
 
-    if cv.waitKey(1) == ord('q'):
+    if cv.waitKey(0) == ord('q'):
         break
 
 # out.release()

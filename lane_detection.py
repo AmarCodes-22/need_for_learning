@@ -62,7 +62,6 @@ class LaneDetector:
         unwarped = cv.warpPerspective(warped, self.rev_pers_matrix, (640, 480))
         blank = np.ones(original_frame.shape, dtype=np.uint8) * 255
         blank = cv.fillPoly(blank, [self.roi], (0, 0, 0))
-        # print(blank.dtype, original_frame.dtype)
         original_masked = cv.bitwise_and(original_frame, blank)
         result = cv.bitwise_or(original_masked, unwarped)
 
