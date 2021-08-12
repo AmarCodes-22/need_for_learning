@@ -27,7 +27,9 @@ The V channel contains the value, ie the brightness of the pixels. This channel 
 #### LAB  
 The LAB color space seperates the colors on two axes and lightness on the third axis.
 
-![](https://github.com/AmarCodes-22/need_for_learning/blob/main/readme_stuff/LAB_color_space_smol.png)
+![](https://github.com/AmarCodes-22/need_for_learning/blob/main/readme_stuff/LAB_color_space_smol.png)  
+
+__Explanation__
 
 The L channel contains information about the lightness of pixels. OpenCV uses the range (0, 255).  
 The A and B channel contains color on a spectrum each axis having different colors at extreme.    
