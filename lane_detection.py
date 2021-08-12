@@ -57,6 +57,8 @@ class LaneDetector:
         right_x_base = np.array([np.argmax(weighted_counts[320:]) + 320, 456])
 
         left_lane_x, left_lane_y, right_lane_x, right_lane_y = self.find_lanes(filtered_frame, left_x_base, right_x_base)
+        # rects = self.find_lanes(filtered_frame, left_x_base, right_x_base)
+
         self.fit_and_draw(warped, (left_lane_x, left_lane_y, right_lane_x, right_lane_y))
         
         unwarped = cv.warpPerspective(warped, self.rev_pers_matrix, (640, 480))
@@ -132,18 +134,18 @@ class LaneDetector:
         shift_corr_left_lane, shift_corr_right_lane = left_base[0]-48, right_base[0]-48
         cache_left_diff, cache_right_diff = 0, 0
         for i in range(10):
-            # frame = cv.rectangle(frame, 
-            #                     (left_base[0]-48, left_base[1]-24), 
-            #                     (left_base[0]+48, left_base[1]+24), 
-            #                     (255), 
-            #                     2, 
-            #                     cv.LINE_4)
-            # frame = cv.rectangle(frame, 
-            #                     (right_base[0]-48, right_base[1]-24), 
-            #                     (right_base[0]+48, right_base[1]+24), 
-            #                     (255), 
-            #                     2, 
-            #                     cv.LINE_4)
+            frame = cv.rectangle(frame, 
+                                (left_base[0]-48, left_base[1]-24), 
+                                (left_base[0]+48, left_base[1]+24), 
+                                (255), 
+                                2, 
+                                cv.LINE_4)
+            frame = cv.rectangle(frame, 
+                                (right_base[0]-48, right_base[1]-24), 
+                                (right_base[0]+48, right_base[1]+24), 
+                                (255), 
+                                2, 
+                                cv.LINE_4)
             # frame = cv.circle(frame, left_base, 10, (255), 2)
             # frame = cv.circle(frame, right_base, 10, (255), 2)
 
@@ -216,6 +218,7 @@ class LaneDetector:
                 shift_corr_right_lane += cache_right_diff
 
         return left_lane_xs, left_lane_ys, right_lane_xs, right_lane_ys 
+        # return frame
 
     @staticmethod
     def cleaner(frame, ref_points):
