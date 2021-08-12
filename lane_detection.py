@@ -16,8 +16,9 @@ class LaneDetector:
     count_both_sides, count_one_side, no_line = 0, 0, 0
 
     def __init__(self):
-        self.roi = np.float32([[220, 240], [420, 240], [600, 360], [40, 360]])
+        self.roi = np.array([[220, 240], [420, 240], [600, 360], [40, 360]], np.int32)
         self.ref_vertices = np.array([[120, 480], [240, 300], [400, 300], [520, 480]], np.int32)
+        self.roi.reshape((-1, 1, 2))
         self.ref_vertices.reshape((-1,1,2))
         self.pers1 = np.float32([[220, 240], [420, 240], [40, 360], [600, 360]])
         self.pers2 = np.float32([[0, 0], [640, 0], [0, 480], [640, 480]])
@@ -59,9 +60,14 @@ class LaneDetector:
         self.fit_and_draw(warped, (left_lane_x, left_lane_y, right_lane_x, right_lane_y))
         
         unwarped = cv.warpPerspective(warped, self.rev_pers_matrix, (640, 480))
-        result = cv.addWeighted(original_frame, 1, unwarped, 2, 0)
+        blank = np.ones(original_frame.shape, dtype=np.uint8) * 255
+        blank = cv.fillPoly(blank, [self.roi], (0, 0, 0))
+        # print(blank.dtype, original_frame.dtype)
+        original_masked = cv.bitwise_and(original_frame, blank)
+        test = cv.bitwise_or(original_masked, unwarped)
+        # result = cv.addWeighted(original_masked, 1, unwarped, 0.5, 0)
 
-        return result
+        return test
     
     def fit_and_draw(self, original_frame, lanes):
         """Takes the points that are considered to be in the lane 
@@ -86,13 +92,13 @@ class LaneDetector:
                 left_draw_y = 480 - left_draw_y
                 left_draw_points = (np.asarray([uniques_left_x, left_draw_y]).T).astype(np.int32)
                 cache.store_in_cache(left_draw_points, 'left')
-                cv.polylines(original_frame, [left_draw_points], False, (0, 0, 0), thickness=25)
+                cv.polylines(original_frame, [left_draw_points], False, (255, 0, 0), thickness=15)
             else:
                 left_draw_points = cache.get_from_cache('left')
-                cv.polylines(original_frame, [left_draw_points], False, (0, 0, 0), thickness=25)
+                cv.polylines(original_frame, [left_draw_points], False, (255, 0, 0), thickness=15)
         else:
             left_draw_points = cache.get_from_cache('left')
-            cv.polylines(original_frame, [left_draw_points], False, (0, 0, 0), thickness=25)
+            cv.polylines(original_frame, [left_draw_points], False, (255, 0, 0), thickness=15)
             
         #* Drawing right lane on the processed frame
         uniques_right_x = np.unique(right_x)
@@ -104,13 +110,13 @@ class LaneDetector:
                 right_draw_y = 480 - right_draw_y
                 right_draw_points = (np.asarray([np.unique(right_x), right_draw_y]).T).astype(np.int32)
                 cache.store_in_cache(right_draw_points, 'right')
-                cv.polylines(original_frame, [right_draw_points], False, (0, 0, 0), thickness=25)
+                cv.polylines(original_frame, [right_draw_points], False, (0, 0, 255), thickness=15)
             else:
                 right_draw_points = cache.get_from_cache('right')
-                cv.polylines(original_frame, [right_draw_points], False, (0, 0, 0), thickness=25)
+                cv.polylines(original_frame, [right_draw_points], False, (0, 0, 255), thickness=15)
         else:
             right_draw_points = cache.get_from_cache('right')
-            cv.polylines(original_frame, [right_draw_points], False, (0, 0, 0), thickness=25)
+            cv.polylines(original_frame, [right_draw_points], False, (0, 0, 255), thickness=15)
 
 
     def find_lanes(self, frame, left_base, right_base):
