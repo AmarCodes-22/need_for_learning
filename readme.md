@@ -42,6 +42,11 @@ We can see that the B channel from LAB color space filters the yellow lanes on t
 
 ### Subtask 3: Lane detection  
 We don't perform the lane detection on the complete image, instead we crop out a part of the image and use that to perform the lane detection.  
+
+Here is the original image:  
+![](https://github.com/AmarCodes-22/need_for_learning/blob/main/readme_stuff/original_frame.png)
+
+
 The cropped out part of the image looks like this.  
 
 ![](https://github.com/AmarCodes-22/need_for_learning/blob/main/readme_stuff/roi_smol.png)
