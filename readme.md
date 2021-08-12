@@ -60,7 +60,11 @@ After this we filter this warped frame using color space filtering.
 
 ![](https://github.com/AmarCodes-22/need_for_learning/blob/main/readme_stuff/warped_filtered_smol.png)  
 
-We apply lane detection on this image draw those lines back onto the color warped image.
+We apply lane detection on this image and draw those lines back onto the color warped image.
+For lane detection we find the base of the lanes using the sum of values in a single vertical column. The columns with a lot of 1's is used as the base. To give weight to the pixels that are lower in the image(closer to the base), we give each row a weight equal to the row number and square those. This gives us a weighted sum of the column.  
+We then track the lanes based on the average in the little rectangle, if the average tends to follow right, we move the next box a little to the right and so on.  
+
+![](https://github.com/AmarCodes-22/need_for_learning/blob/main/readme_stuff/rectangles_smol.png)
 
 ![](https://github.com/AmarCodes-22/need_for_learning/blob/main/readme_stuff/warped_and_lanes_drawn_smol.png)  
 
